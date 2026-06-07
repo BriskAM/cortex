@@ -70,10 +70,8 @@ const loadChatSession = async () => {
   await chatStore.fetchSessions(repoId.value);
   
   if (chatStore.sessions.length > 0) {
-    // Load first session by default
     await chatStore.fetchSessionDetails(chatStore.sessions[0].id);
   } else {
-    // Create new default session
     await chatStore.createSession(repoId.value);
   }
 };
@@ -152,7 +150,7 @@ onUnmounted(() => {
             <h3>{{ chatStore.currentSession?.title || 'Chat' }}</h3>
           </div>
           <div class="actions">
-            <router-link :to="`/${owner}/${repo}/pr/1`" style="margin-right: 15px; color: #a78bfa; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+            <router-link :to="`/${owner}/${repo}/pr/1`" class="btn-pr-link">
               Try PR Chat
             </router-link>
             <router-link to="/dashboard" class="btn-dashboard-link">Dashboard</router-link>
@@ -172,9 +170,8 @@ onUnmounted(() => {
 <style scoped>
 .repo-view-layout {
   min-height: 100vh;
-  background: #0d0d15;
-  color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--on-surface);
 }
 
 .loading-screen {
@@ -189,9 +186,8 @@ onUnmounted(() => {
 .loader {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255,255,255,0.05);
-  border-top-color: #a78bfa;
-  border-radius: 50%;
+  border: 1px solid var(--outline-variant);
+  border-top-color: var(--primary);
   animation: spin 1s linear infinite;
 }
 
@@ -207,8 +203,8 @@ onUnmounted(() => {
 
 .sidebar {
   width: 280px;
-  background: #09090e;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-low);
+  border-right: 1px solid var(--outline-variant);
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -221,42 +217,40 @@ onUnmounted(() => {
 
 .logo-title {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   margin: 0 0 0.5rem 0;
   cursor: pointer;
-  background: linear-gradient(135deg, #a78bfa, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 .repo-badge {
   font-size: 0.75rem;
-  color: #9ca3af;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--on-surface-variant);
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
   padding: 2px 6px;
-  border-radius: 4px;
   display: inline-block;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--mono);
 }
 
 .btn-new-chat {
-  background: rgba(167, 139, 250, 0.1);
-  color: #a78bfa;
-  border: 1px solid rgba(167, 139, 250, 0.2);
-  border-radius: 6px;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
   padding: 10px;
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 1.5rem;
   width: 100%;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-new-chat:hover {
-  background: rgba(167, 139, 250, 0.2);
+  background: rgba(173, 198, 255, 0.15);
 }
 
 .sessions-list {
@@ -272,22 +266,24 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  border-radius: 6px;
+  border: 1px solid transparent;
   cursor: pointer;
   background: transparent;
-  color: #9ca3af;
-  transition: all 0.2s ease;
+  color: var(--on-surface-variant);
+  transition: all 0.15s ease;
 }
 
 .session-tab:hover {
-  background: rgba(255, 255, 255, 0.02);
-  color: #ffffff;
+  background: var(--surface-container);
+  color: var(--on-surface);
+  border-color: var(--outline-variant);
 }
 
 .session-tab.active {
-  background: rgba(167, 139, 250, 0.08);
-  color: #a78bfa;
-  font-weight: 500;
+  background: var(--surface-container-high);
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
 }
 
 .session-title {
@@ -302,7 +298,7 @@ onUnmounted(() => {
 .btn-delete-session {
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: var(--outline);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 0;
@@ -314,7 +310,7 @@ onUnmounted(() => {
 }
 
 .session-tab:hover .btn-delete-session:hover {
-  color: #ef4444;
+  color: var(--error);
 }
 
 .chat-workspace {
@@ -326,8 +322,8 @@ onUnmounted(() => {
 
 .workspace-header {
   height: 64px;
-  background: #0c0c14;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-lowest);
+  border-bottom: 1px solid var(--outline-variant);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -340,20 +336,41 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
-.btn-dashboard-link {
-  color: #9ca3af;
+.btn-pr-link {
+  margin-right: 15px;
+  color: var(--primary);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
+  border: 1px solid var(--primary);
+  padding: 6px 12px;
+  transition: all 0.15s ease;
+}
+
+.btn-pr-link:hover {
+  background: rgba(173, 198, 255, 0.15);
+  color: var(--on-surface);
+}
+
+.btn-dashboard-link {
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--outline-variant);
+  padding: 6px 12px;
+  transition: all 0.15s ease;
 }
 
 .btn-dashboard-link:hover {
-  color: #ffffff;
+  color: var(--on-surface);
+  border-color: var(--outline);
 }
 
 .chat-container {
   flex: 1;
   padding: 1.5rem;
   overflow: hidden;
+  background: var(--background);
 }
 </style>

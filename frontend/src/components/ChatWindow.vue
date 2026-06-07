@@ -83,7 +83,7 @@ const openSources = (sources) => {
           :disabled="chatStore.isStreaming"
           class="chat-input"
         />
-        <button type="submit" class="btn btn-send" :disabled="chatStore.isStreaming">
+        <button type="submit" class="btn-send" :disabled="chatStore.isStreaming">
           {{ chatStore.isStreaming ? 'Thinking...' : 'Send' }}
         </button>
       </form>
@@ -102,9 +102,8 @@ const openSources = (sources) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #0f0f18;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
   overflow: hidden;
 }
 
@@ -120,11 +119,11 @@ const openSources = (sources) => {
 .welcome-box {
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
 }
 
 .welcome-box h3 {
-  color: #a78bfa;
+  color: var(--primary);
   font-size: 1.4rem;
   margin-bottom: 0.5rem;
 }
@@ -144,36 +143,32 @@ const openSources = (sources) => {
 .avatar {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: rgba(167, 139, 250, 0.15);
-  color: #a78bfa;
+  background: var(--surface-container-high);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  border: 1px solid rgba(167, 139, 250, 0.3);
+  border: 1px solid var(--outline-variant);
   flex-shrink: 0;
+  font-family: var(--mono);
 }
 
 .message-bubble.user .avatar {
-  background: rgba(236, 72, 153, 0.15);
-  color: #ec4899;
-  border-color: rgba(236, 72, 153, 0.3);
+  background: var(--surface-container-highest);
+  color: var(--on-surface);
+  border-color: var(--outline);
 }
 
 .content-wrapper {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
   padding: 1rem;
-  border-radius: 12px;
-  border-top-left-radius: 0;
 }
 
 .message-bubble.user .content-wrapper {
-  background: rgba(167, 139, 250, 0.08);
-  border-color: rgba(167, 139, 250, 0.15);
-  border-radius: 12px;
-  border-top-right-radius: 0;
+  background: var(--surface-container-high);
+  border-color: var(--primary);
 }
 
 .message-content {
@@ -184,14 +179,14 @@ const openSources = (sources) => {
 
 .source-citation {
   margin-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--outline-variant);
   padding-top: 0.5rem;
 }
 
 .btn-sources {
   background: transparent;
   border: none;
-  color: #a78bfa;
+  color: var(--primary);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -204,8 +199,8 @@ const openSources = (sources) => {
 
 .input-area {
   padding: 1.25rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-low);
+  border-top: 1px solid var(--outline-variant);
 }
 
 .chat-form {
@@ -215,28 +210,33 @@ const openSources = (sources) => {
 
 .chat-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
   padding: 12px 16px;
-  color: white;
+  color: var(--on-surface);
   outline: none;
   font-size: 0.95rem;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .chat-input:focus {
-  border-color: #8b5cf6;
+  border-color: var(--primary);
 }
 
 .btn-send {
-  background: linear-gradient(135deg, #8b5cf6, #d946ef);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  border: 1px solid var(--primary);
   padding: 0 24px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: var(--primary-container);
+  border-color: var(--primary-container);
+  color: var(--on-surface);
 }
 
 .btn-send:disabled {
@@ -246,12 +246,12 @@ const openSources = (sources) => {
 
 .cursor {
   animation: blink 1s step-end infinite;
-  color: #a78bfa;
+  color: var(--primary);
   font-weight: bold;
 }
 
 @keyframes blink {
   from, to { color: transparent }
-  50% { color: #a78bfa; }
+  50% { color: var(--primary); }
 }
 </style>

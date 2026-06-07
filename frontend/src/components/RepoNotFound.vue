@@ -12,7 +12,7 @@ defineProps({
       <h2>Repository Not Found</h2>
       <p>We couldn't find <strong>{{ owner }}/{{ repo }}</strong> on GitHub.</p>
       <p class="hint">Make sure the repository is public and the spelling is correct.</p>
-      <router-link to="/" class="btn btn-primary">Go Back Home</router-link>
+      <router-link to="/" class="btn-home">Go Back Home</router-link>
     </div>
   </div>
 </template>
@@ -23,19 +23,16 @@ defineProps({
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 4rem);
-  background: #0d0d15;
-  color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--on-surface);
 }
 
 .card {
   text-align: center;
   max-width: 450px;
   padding: 3rem 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
 }
 
 .icon {
@@ -50,24 +47,32 @@ h2 {
 }
 
 p {
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }
 
 .hint {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--outline);
   margin-bottom: 2rem;
+  font-family: var(--mono);
 }
 
-.btn-primary {
+.btn-home {
   display: inline-block;
-  background: linear-gradient(135deg, #8b5cf6, #d946ef);
-  color: white;
+  background: var(--primary);
+  color: var(--on-primary);
   text-decoration: none;
   padding: 10px 24px;
-  border-radius: 6px;
   font-weight: 600;
+  border: 1px solid var(--primary);
+  transition: all 0.15s ease;
+}
+
+.btn-home:hover {
+  background: var(--primary-container);
+  border-color: var(--primary-container);
+  color: var(--on-surface);
 }
 </style>

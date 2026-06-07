@@ -80,15 +80,13 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
   right: -400px;
   width: 400px;
   height: 100vh;
-  background: #12121e;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+  background: var(--surface-container-low);
+  border-left: 1px solid var(--outline-variant);
   display: flex;
   flex-direction: column;
   transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #f3f4f6;
+  color: var(--on-surface);
 }
 
 .drawer-container.open {
@@ -100,7 +98,7 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--outline-variant);
 }
 
 .drawer-header h3 {
@@ -112,15 +110,15 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
 .btn-close {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   font-size: 1.5rem;
   cursor: pointer;
 }
 
 .tabs {
   display: flex;
-  background: rgba(0, 0, 0, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-lowest);
+  border-bottom: 1px solid var(--outline-variant);
 }
 
 .tab-btn {
@@ -128,17 +126,17 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   padding: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .tab-btn.active {
-  color: #a78bfa;
-  border-bottom-color: #a78bfa;
-  background: rgba(167, 139, 250, 0.05);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: var(--surface-container);
 }
 
 .drawer-body {
@@ -148,7 +146,7 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
 }
 
 .empty-tab {
-  color: #6b7280;
+  color: var(--outline);
   text-align: center;
   padding-top: 3rem;
   font-size: 0.9rem;
@@ -161,9 +159,8 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
   padding: 1rem;
 }
 
@@ -171,43 +168,43 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   margin-bottom: 0.75rem;
 }
 
 .file-path {
   font-weight: 600;
-  color: #a78bfa;
+  color: var(--primary);
 }
 
 .snippet {
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--surface-container);
   padding: 8px 12px;
-  border-radius: 4px;
   overflow-x: auto;
   margin: 0;
+  border: 1px solid var(--outline-variant);
 }
 
 .snippet code {
-  font-family: 'Fira Code', monospace;
+  font-family: var(--mono);
   font-size: 0.8rem;
-  color: #e5e7eb;
+  color: var(--on-surface);
 }
 
 .pr-card {
-  border-left: 3px solid #ec4899;
+  border-left: 3px solid var(--primary);
 }
 
 .pr-title-link {
-  color: #ffffff;
+  color: var(--on-surface);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 
 .pr-title-link:hover {
-  color: #ec4899;
+  color: var(--primary);
 }
 
 .pr-meta {
@@ -215,7 +212,7 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   margin-top: 0.5rem;
 }
 </style>

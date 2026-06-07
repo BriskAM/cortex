@@ -120,9 +120,8 @@ onMounted(loadPrDetails);
 <style scoped>
 .pr-view-container {
   min-height: 100vh;
-  background: #0d0d15;
-  color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--on-surface);
 }
 
 .loading-screen {
@@ -137,9 +136,8 @@ onMounted(loadPrDetails);
 .loader {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255,255,255,0.05);
-  border-top-color: #a78bfa;
-  border-radius: 50%;
+  border: 1px solid var(--outline-variant);
+  border-top-color: var(--primary);
   animation: spin 1s linear infinite;
 }
 
@@ -155,8 +153,8 @@ onMounted(loadPrDetails);
 
 .metadata-panel {
   width: 380px;
-  background: #09090e;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-low);
+  border-right: 1px solid var(--outline-variant);
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
@@ -169,7 +167,7 @@ onMounted(loadPrDetails);
 }
 
 .back-link {
-  color: #a78bfa;
+  color: var(--primary);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
@@ -178,22 +176,19 @@ onMounted(loadPrDetails);
 }
 
 .back-link:hover {
-  text-decoration: underline;
+  color: var(--on-surface);
 }
 
 .title {
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, #ffffff, #a3a3a3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--on-surface);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
   padding: 1.25rem;
 }
 
@@ -210,26 +205,29 @@ onMounted(loadPrDetails);
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
+  font-family: var(--mono);
 }
 
 .divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--outline-variant);
   margin: 1.25rem 0;
 }
 
 h4 {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #a78bfa;
+  font-weight: 700;
+  color: var(--primary);
   margin-top: 0;
   margin-bottom: 0.5rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
 }
 
 .pr-body {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   line-height: 1.5;
   margin: 0;
   white-space: pre-wrap;
@@ -239,10 +237,11 @@ h4 {
   padding-left: 1.25rem;
   margin: 0;
   font-size: 0.85rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  font-family: var(--mono);
 }
 
 .chat-area {
@@ -254,8 +253,8 @@ h4 {
 
 .workspace-header {
   height: 64px;
-  background: #0c0c14;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-lowest);
+  border-bottom: 1px solid var(--outline-variant);
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
@@ -271,6 +270,7 @@ h4 {
   flex: 1;
   padding: 1.5rem 1.5rem 0.5rem 1.5rem;
   overflow: hidden;
+  background: var(--background);
 }
 
 .starter-box {
@@ -279,7 +279,7 @@ h4 {
 
 .starter-box .label {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--outline);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -291,20 +291,19 @@ h4 {
 }
 
 .pill-btn {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: #9ca3af;
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant);
   padding: 8px 16px;
-  border-radius: 9999px;
   font-size: 0.85rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .pill-btn:hover {
-  background: rgba(167, 139, 250, 0.08);
-  border-color: rgba(167, 139, 250, 0.25);
-  color: #a78bfa;
+  background: var(--surface-container-high);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 </style>

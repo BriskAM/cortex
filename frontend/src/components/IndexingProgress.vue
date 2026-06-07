@@ -27,8 +27,7 @@ const stageLabel = computed(() => {
 
 <template>
   <div class="progress-container">
-    <div class="progress-card glass-card">
-      <div class="spinner"></div>
+    <div class="progress-card glass-card pulse-active">
       <h2>Indexing Codebase</h2>
       <p class="current-stage">{{ stageLabel }}</p>
       
@@ -46,9 +45,8 @@ const stageLabel = computed(() => {
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 4rem);
-  background: #0d0d15;
-  color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--on-surface);
 }
 
 .progress-card {
@@ -56,25 +54,8 @@ const stageLabel = computed(() => {
   width: 100%;
   max-width: 500px;
   padding: 3rem 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(167, 139, 250, 0.1);
-  border-top-color: #a78bfa;
-  border-radius: 50%;
-  margin: 0 auto 1.5rem auto;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
 }
 
 h2 {
@@ -85,32 +66,32 @@ h2 {
 }
 
 .current-stage {
-  color: #a78bfa;
+  color: var(--primary);
   font-size: 0.95rem;
   margin-bottom: 2rem;
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--mono);
+  text-transform: uppercase;
 }
 
 .progress-bar-wrapper {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 9999px;
-  height: 8px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  height: 12px;
   overflow: hidden;
   margin-bottom: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .progress-bar {
-  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+  background: var(--primary);
   height: 100%;
-  border-radius: 9999px;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 .progress-text {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--on-surface-variant);
   font-weight: 600;
+  font-family: var(--mono);
 }
 </style>

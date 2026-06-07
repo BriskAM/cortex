@@ -46,7 +46,7 @@ const handleReindex = async (id) => {
   <div class="dashboard-container">
     <header class="dashboard-header">
       <div class="logo">
-        <h1 class="gradient-text" @click="router.push('/')">Cortex</h1>
+        <h1 @click="router.push('/')">Cortex</h1>
         <span class="badge">Dashboard</span>
       </div>
       <div class="user-menu">
@@ -95,9 +95,8 @@ const handleReindex = async (id) => {
 <style scoped>
 .dashboard-container {
   min-height: 100vh;
-  background: #0d0d15;
-  color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--on-surface);
   padding: 2rem;
 }
 
@@ -105,7 +104,7 @@ const handleReindex = async (id) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--outline-variant);
   padding-bottom: 1.5rem;
   margin-bottom: 3rem;
 }
@@ -118,25 +117,21 @@ const handleReindex = async (id) => {
 
 .logo h1 {
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 700;
   margin: 0;
   cursor: pointer;
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, #a78bfa, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
 }
 
 .badge {
-  background: rgba(167, 139, 250, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(167, 139, 250, 0.3);
+  background: var(--surface-container-high);
+  color: var(--primary);
+  border: 1px solid var(--outline-variant);
   padding: 2px 8px;
-  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+  font-family: var(--mono);
+  text-transform: uppercase;
 }
 
 .user-menu {
@@ -146,36 +141,22 @@ const handleReindex = async (id) => {
 }
 
 .user-email {
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   font-size: 0.9rem;
-}
-
-.btn {
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #d946ef);
-  color: white;
-}
-
-.btn-primary:hover {
-  opacity: 0.9;
 }
 
 .btn-logout {
   background: transparent;
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--error);
+  border: 1px solid var(--error);
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn-logout:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(255, 180, 171, 0.15);
 }
 
 .dashboard-content {
@@ -189,15 +170,13 @@ const handleReindex = async (id) => {
 
 .section-title h2 {
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
   padding: 1.5rem;
 }
 
@@ -207,7 +186,7 @@ const handleReindex = async (id) => {
 }
 
 .empty-state p {
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   margin-bottom: 1.5rem;
 }
 
@@ -222,40 +201,41 @@ const handleReindex = async (id) => {
   flex-direction: column;
   justify-content: space-between;
   gap: 1.5rem;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .repo-card:hover {
-  border-color: rgba(167, 139, 250, 0.2);
-  transform: translateY(-2px);
+  border-color: var(--primary);
 }
 
 .repo-name-link {
   margin: 0;
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 
 .repo-name-link:hover {
-  color: #a78bfa;
+  color: var(--primary);
 }
 
 .repo-url {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--on-surface-variant);
   margin: 0.25rem 0 1rem 0;
+  font-family: var(--mono);
 }
 
 .repo-stats {
   display: flex;
   gap: 1rem;
   font-size: 0.85rem;
-  color: #9ca3af;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--on-surface-variant);
+  border-top: 1px solid var(--outline-variant);
   padding-top: 1rem;
   margin-bottom: 0.75rem;
+  font-family: var(--mono);
 }
 
 .status-row {
@@ -266,57 +246,71 @@ const handleReindex = async (id) => {
 }
 
 .status-row .label {
-  color: #9ca3af;
+  color: var(--on-surface-variant);
 }
 
 .status-badge {
-  border-radius: 4px;
   padding: 2px 6px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--mono);
   text-transform: uppercase;
+  border: 1px solid var(--outline-variant);
 }
 
 .status-badge.ready {
   background: rgba(16, 185, 129, 0.1);
   color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .status-badge.indexing {
   background: rgba(245, 158, 11, 0.1);
   color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .status-badge.failed {
   background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: var(--error);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .repo-actions {
   display: flex;
   gap: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--outline-variant);
   padding-top: 1rem;
 }
 
 .btn-action {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
   flex: 1;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn-action:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-container-highest);
+  border-color: var(--outline);
 }
 
 .btn-danger {
-  background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(255, 180, 171, 0.1);
+  color: var(--error);
+  border: 1px solid var(--error);
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn-danger:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: var(--error);
+  color: var(--on-primary);
 }
 </style>

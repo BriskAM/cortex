@@ -14,7 +14,6 @@ const authError = ref('');
 
 const handleExplore = () => {
   if (!repoInput.value) return;
-  // Parse input format: e.g. "owner/repo" or "https://github.com/owner/repo"
   let path = repoInput.value.replace(/https:\/\/github\.com\//, '').trim();
   const parts = path.split('/');
   if (parts.length >= 2) {
@@ -46,7 +45,7 @@ const handleAuth = async () => {
 <template>
   <div class="landing-container">
     <div class="glass-card hero">
-      <h1 class="gradient-text">Cortex</h1>
+      <h1>Cortex</h1>
       <p class="subtitle">Chat with your codebase and its engineering history.</p>
       
       <div class="explore-section">
@@ -58,7 +57,7 @@ const handleAuth = async () => {
             @keyup.enter="handleExplore"
             class="glow-input"
           />
-          <button @click="handleExplore" class="btn btn-primary">Explore</button>
+          <button @click="handleExplore" class="btn-explore">Explore</button>
         </div>
       </div>
     </div>
@@ -75,7 +74,7 @@ const handleAuth = async () => {
           <input v-model="password" type="password" required placeholder="••••••••" />
         </div>
         <p v-if="authError" class="error-msg">{{ authError }}</p>
-        <button type="submit" class="btn btn-secondary">
+        <button type="submit" class="btn-auth">
           {{ isLoginMode ? 'Sign In' : 'Sign Up' }}
         </button>
       </form>
@@ -96,45 +95,38 @@ const handleAuth = async () => {
   justify-content: center;
   min-height: 100vh;
   gap: 2rem;
-  background: radial-gradient(circle at top left, #1e1e38, #0d0d15);
-  color: #f3f4f6;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--on-surface);
   padding: 1rem;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
   padding: 2.5rem;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  transition: border-color 0.15s ease;
 }
 
 .glass-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--outline);
 }
 
 .hero {
   text-align: center;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #a78bfa, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 3.5rem;
-  font-weight: 800;
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
   margin: 0;
+  color: var(--primary);
 }
 
 .subtitle {
-  color: #9ca3af;
-  font-size: 1.1rem;
+  color: var(--on-surface-variant);
+  font-size: 1rem;
   margin-top: 0.5rem;
   margin-bottom: 2rem;
 }
@@ -142,70 +134,54 @@ const handleAuth = async () => {
 .explore-section {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .input-group {
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 4px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
   width: 100%;
 }
 
 .prefix {
   padding-left: 12px;
-  color: #6b7280;
-  font-weight: 500;
+  color: var(--outline);
+  font-weight: 600;
+  font-family: var(--mono);
 }
 
 .glow-input {
   background: transparent;
   border: none;
-  color: #ffffff;
-  padding: 8px;
+  color: var(--on-surface);
+  padding: 12px 8px;
   flex: 1;
   outline: none;
   font-size: 1rem;
 }
 
-.btn {
+.btn-explore {
   border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
+  background: var(--primary);
+  color: var(--on-primary);
   font-weight: 600;
+  padding: 12px 24px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #d946ef);
-  color: white;
-}
-
-.btn-primary:hover {
-  opacity: 0.9;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+.btn-explore:hover {
+  background: var(--primary-container);
+  color: var(--on-surface);
 }
 
 .auth-card h2 {
   margin-top: 0;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #ffffff, #a3a3a3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--on-surface);
 }
 
 .auth-form {
@@ -222,27 +198,41 @@ const handleAuth = async () => {
 
 .form-group label {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--on-surface-variant);
   font-weight: 500;
 }
 
 .form-group input {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
   padding: 10px 12px;
-  color: white;
+  color: var(--on-surface);
   outline: none;
   font-size: 0.95rem;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .form-group input:focus {
-  border-color: #8b5cf6;
+  border-color: var(--primary);
+}
+
+.btn-auth {
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-auth:hover {
+  border-color: var(--outline);
+  background: var(--surface-container-highest);
 }
 
 .error-msg {
-  color: #f87171;
+  color: var(--error);
   font-size: 0.85rem;
   margin: 0;
 }
@@ -253,13 +243,13 @@ const handleAuth = async () => {
 }
 
 .toggle-mode a {
-  color: #a78bfa;
+  color: var(--primary);
   font-size: 0.875rem;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 
 .toggle-mode a:hover {
-  color: #c084fc;
+  color: var(--on-surface);
 }
 </style>
