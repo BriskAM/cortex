@@ -132,6 +132,13 @@ class IndexerService:
         if not chunks:
             return []
 
+        # Map to task types supported by gemini-embedding-001 in Generative Language API
+        api_task_type = task_type
+        if task_type == "CODE_RETRIEVAL_DOCUMENT":
+            api_task_type = "RETRIEVAL_DOCUMENT"
+        elif task_type == "CODE_RETRIEVAL_QUERY":
+            api_task_type = "RETRIEVAL_QUERY"
+
         texts = [c["content"] for c in chunks]
         embeddings = []
         
@@ -139,21 +146,44 @@ class IndexerService:
         batch_size = 20
         for i in range(0, len(texts), batch_size):
             batch = texts[i : i + batch_size]
-            try:
-                config = types.EmbedContentConfig(
-                    task_type=task_type,
-                    output_dimensionality=1536
-                )
-                response = self.client.models.embed_content(
-                    model="gemini-embedding-001",
-                    contents=batch,
-                    config=config
-                )
-                for emb in response.embeddings:
-                    embeddings.append(emb.values)
-            except Exception as e:
-                print(f"Embedding API call failed for batch starting at {i}: {e}")
-                # Fallback vectors
+            
+            max_retries = 3
+            retry_delay = 5
+            success = False
+            
+            for attempt in range(max_retries):
+                try:
+                    config = types.EmbedContentConfig(
+                        task_type=api_task_type,
+                        output_dimensionality=1536
+                    )
+                    response = self.client.models.embed_content(
+                        model="gemini-embedding-001",
+                        contents=batch,
+                        config=config
+                    )
+                    for emb in response.embeddings:
+                        embeddings.append(emb.values)
+                    success = True
+                    break
+                except Exception as e:
+                    err_msg = str(e)
+                    print(f"Embedding API call failed for batch starting at {i} (attempt {attempt+1}/{max_retries}): {err_msg}")
+                    
+                    if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "quota" in err_msg.lower():
+                        # Free Tier limits are 100 requests per minute. Wait 60s to refresh window
+                        sleep_time = 62 if attempt == 0 else 90
+                        print(f"Rate limit hit. Sleeping for {sleep_time} seconds before retrying...")
+                        import time
+                        time.sleep(sleep_time)
+                    else:
+                        # Other transient errors
+                        import time
+                        time.sleep(retry_delay)
+                        retry_delay *= 2
+            
+            if not success:
+                print(f"Failed to generate embeddings for batch starting at {i} after {max_retries} attempts.")
                 embeddings.extend([[0.0] * 1536 for _ in batch])
                 
         return embeddings
