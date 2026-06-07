@@ -38,7 +38,7 @@ class GitHubService:
 
         keep_extensions = {
             '.py', '.js', '.ts', '.vue', '.jsx', '.tsx', 
-            '.java', '.go', '.rs', '.md', '.sql'
+            '.java', '.go', '.rs', '.md', '.sql', '.tex', '.sh'
         }
         
         exclude_paths = {
