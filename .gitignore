@@ -65,3 +65,10 @@ chroma_data/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Project specs & private context docs
+AGENTS.md
+DESIGN.md
+PLAN.md
+interface-spec/
+
