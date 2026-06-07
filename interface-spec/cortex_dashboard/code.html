@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Geist+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .pulse-border {
+            position: relative;
+        }
+        .pulse-border::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border: 1px solid #adc6ff;
+            border-radius: inherit;
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.02); }
+            100% { opacity: 0.8; transform: scale(1); }
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #10131a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #32353c;
+            border-radius: 2px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#191b23",
+                        "inverse-surface": "#e1e2ec",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-tertiary-fixed-variant": "#464747",
+                        "background": "#10131a",
+                        "tertiary-fixed-dim": "#c7c6c6",
+                        "on-tertiary": "#2f3131",
+                        "on-error": "#690005",
+                        "surface-dim": "#10131a",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#454747",
+                        "on-surface": "#e1e2ec",
+                        "primary": "#adc6ff",
+                        "tertiary-fixed": "#e3e2e2",
+                        "on-secondary-container": "#b4b5b5",
+                        "on-secondary-fixed-variant": "#454747",
+                        "surface-variant": "#32353c",
+                        "tertiary-container": "#909191",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-container-high": "#272a31",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#005ac2",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#424754",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary": "#2f3131",
+                        "on-primary-fixed-variant": "#004395",
+                        "secondary": "#c6c6c7",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#c7c6c6",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-tint": "#adc6ff",
+                        "surface": "#10131a",
+                        "surface-bright": "#363941",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "surface-container-highest": "#32353c",
+                        "surface-container": "#1d2027",
+                        "on-primary": "#002e6a",
+                        "inverse-on-surface": "#2e3038",
+                        "on-primary-fixed": "#001a42",
+                        "on-background": "#e1e2ec",
+                        "primary-container": "#4d8eff",
+                        "outline": "#8c909f",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-container": "#292a2a",
+                        "surface-container-lowest": "#0b0e15"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "lg": "24px",
+                        "sidebar-width": "280px",
+                        "sm": "8px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "code-md": ["Geist Mono"],
+                        "body-sm": ["Geist"],
+                        "code-sm": ["Geist Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+                        "code-md": ["13px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400"}],
+                        "code-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter h-14 bg-background border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface">Cortex</span>
+<nav class="hidden md:flex items-center gap-lg ml-xl">
+<a class="text-primary dark:text-primary font-bold font-label-caps text-label-caps hover:bg-surface-container-highest transition-colors px-sm py-xs" href="#">REPOSITORIES</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-highest transition-colors px-sm py-xs" href="#">INTEGRATIONS</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container-highest transition-colors px-sm py-xs" href="#">USAGE</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-sm h-8 bg-surface-container hover:bg-surface-container-highest border border-outline-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">search</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">FIND...</span>
+</button>
+<button class="text-label-caps font-label-caps text-on-surface px-md h-8 border border-outline-variant hover:border-on-surface transition-all">Sign in</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] z-40 flex flex-col pt-14 pb-4 bg-surface-container-low border-r border-outline-variant hidden lg:flex">
+<div class="px-md py-lg border-b border-outline-variant">
+<div class="flex items-center gap-sm mb-xs">
+<div class="w-8 h-8 bg-primary rounded-xs flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" data-icon="terminal">terminal</span>
+</div>
+<div>
+<div class="text-headline-md font-headline-md text-on-surface leading-tight">Cortex AI</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">Technical Intelligence</div>
+</div>
+</div>
+<button class="w-full mt-md bg-primary text-on-primary h-9 font-label-caps text-label-caps font-bold hover:opacity-80 transition-opacity flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                New Chat
+            </button>
+</div>
+<div class="flex-1 py-md overflow-y-auto">
+<div class="px-md mb-xs text-label-caps font-label-caps text-outline">WORKSPACE</div>
+<div class="space-y-px">
+<a class="flex items-center gap-sm px-md py-2 bg-surface-container-highest text-primary border-r-2 border-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="text-label-caps font-label-caps">Recent Chats</span>
+</a>
+<a class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span class="text-label-caps font-label-caps">Saved Queries</span>
+</a>
+<a class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="text-label-caps font-label-caps">Repositories</span>
+</a>
+<a class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-caps font-label-caps">Settings</span>
+</a>
+</div>
+</div>
+<div class="px-md py-md border-t border-outline-variant">
+<div class="space-y-px">
+<a class="flex items-center gap-sm py-1.5 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+<span class="text-body-sm font-body-sm">Docs</span>
+</a>
+<a class="flex items-center gap-sm py-1.5 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="rate_review">rate_review</span>
+<span class="text-body-sm font-body-sm">Feedback</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-[240px] pt-14 min-h-screen">
+<div class="max-w-7xl mx-auto px-gutter py-xl">
+<!-- Header Section -->
+<div class="flex items-center justify-between mb-lg border-b border-outline-variant pb-md">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface">Your repos</h1>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Manage and chat with your indexed codebases.</p>
+</div>
+<div class="flex gap-sm">
+<div class="flex items-center gap-xs px-sm py-1 bg-surface-container border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">API Online</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid of Repositories -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Repo Card: Ready -->
+<div class="bg-surface-container-low border border-outline-variant hover:border-primary transition-all group flex flex-col h-full">
+<div class="p-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="folder_zip">folder_zip</span>
+<span class="text-headline-md font-headline-md font-bold">vercel/next.js</span>
+</div>
+<span class="px-xs py-[2px] bg-primary-container text-on-primary-container text-label-caps font-label-caps rounded-xs">Ready</span>
+</div>
+<div class="p-md flex-1 grid grid-cols-3 gap-sm items-center">
+<div class="text-center">
+<div class="text-on-surface-variant text-label-caps font-label-caps mb-1 uppercase">Files</div>
+<div class="text-on-surface font-code-md text-code-md">42.1k</div>
+</div>
+<div class="text-center border-x border-outline-variant">
+<div class="text-on-surface-variant text-label-caps font-label-caps mb-1 uppercase">PRs</div>
+<div class="text-on-surface font-code-md text-code-md">1.2k+</div>
+</div>
+<div class="text-center">
+<div class="text-on-surface-variant text-label-caps font-label-caps mb-1 uppercase">Chat</div>
+<div class="text-on-surface font-code-md text-code-md">2h ago</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-lowest flex justify-between items-center group-hover:bg-surface-container transition-colors">
+<span class="text-code-sm font-code-sm text-outline">v14.0.0-canary</span>
+<button class="text-primary text-label-caps font-label-caps flex items-center gap-xs">
+                            OPEN CHAT <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Repo Card: Indexing -->
+<div class="bg-surface-container-low border border-outline-variant hover:border-primary transition-all group flex flex-col h-full pulse-border">
+<div class="p-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="account_tree">account_tree</span>
+<span class="text-headline-md font-headline-md font-bold">facebook/react</span>
+</div>
+<div class="flex items-center gap-xs bg-surface-container-high px-xs py-[2px] rounded-xs">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+<span class="text-on-surface text-label-caps font-label-caps">Indexing</span>
+</div>
+</div>
+<div class="p-md flex-1 grid grid-cols-3 gap-sm items-center">
+<div class="text-center">
+<div class="text-on-surface-variant text-label-caps font-label-caps mb-1 uppercase">Files</div>
+<div class="text-on-surface font-code-md text-code-md">8.4k</div>
+</div>
+<div class="text-center border-x border-outline-variant">
+<div class="text-on-surface-variant text-label-caps font-label-caps mb-1 uppercase">PRs</div>
+<div class="text-on-surface font-code-md text-code-md">450</div>
+</div>
+<div class="text-center">
+<div class="text-on-surface-variant text-label-caps font-label-caps mb-1 uppercase">Progress</div>
+<div class="text-primary font-code-md text-code-md">74%</div>
+</div>
+</div>
+<div class="h-1 w-full bg-surface-container">
+<div class="h-full bg-primary w-[74%]"></div>
+</div>
+<div class="p-md bg-surface-container-lowest flex justify-between items-center">
+<span class="text-code-sm font-code-sm text-outline">Analyzing AST...</span>
+<span class="material-symbols-outlined text-outline text-[18px] animate-spin">refresh</span>
+</div>
+</div>
+<!-- Repo Card: Failed -->
+<div class="bg-surface-container-low border border-outline-variant hover:border-error transition-all group flex flex-col h-full">
+<div class="p-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="science">science</span>
+<span class="text-headline-md font-headline-md font-bold">openai/whisper</span>
+</div>
+<span class="px-xs py-[2px] bg-error-container text-on-error-container text-label-caps font-label-caps rounded-xs">Failed</span>
+</div>
+<div class="p-md flex-1 flex flex-col justify-center items-center gap-sm text-center">
+<span class="material-symbols-outlined text-error text-[32px]">error</span>
+<div>
+<div class="text-on-surface font-body-sm">Sync interrupted by git lfs</div>
+<div class="text-on-surface-variant text-code-sm font-code-sm">Exit code: 128</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-lowest border-t border-outline-variant flex justify-center">
+<button class="text-error text-label-caps font-label-caps hover:underline">RETRY INDEXING</button>
+</div>
+</div>
+<!-- Empty State Card -->
+<div class="border-2 border-dashed border-outline-variant hover:border-primary hover:bg-surface-container-lowest transition-all group flex flex-col justify-center items-center p-xl min-h-[220px] text-center cursor-pointer">
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="add_box">add_box</span>
+</div>
+<div class="text-headline-md font-headline-md text-on-surface mb-xs">Index New Repo</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant bg-surface-container-low px-sm py-1 border border-outline-variant">
+                        Chat with a repo → cortex.dev/owner/repo
+                    </div>
+</div>
+<!-- Active Work Card -->
+<div class="bg-surface-container-low border border-outline-variant flex flex-col h-full xl:col-span-2">
+<div class="p-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="analytics">analytics</span>
+<span class="text-headline-md font-headline-md font-bold">Global Workspace Stats</span>
+</div>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+</div>
+</div>
+<div class="p-md grid grid-cols-2 md:grid-cols-4 gap-md flex-1">
+<div class="p-sm bg-background border border-outline-variant">
+<div class="text-outline text-label-caps font-label-caps mb-xs">TOTAL TOKENS</div>
+<div class="text-headline-md font-code-md text-primary">1.2M</div>
+</div>
+<div class="p-sm bg-background border border-outline-variant">
+<div class="text-outline text-label-caps font-label-caps mb-xs">INDEXED FILES</div>
+<div class="text-headline-md font-code-md text-on-surface">152,094</div>
+</div>
+<div class="p-sm bg-background border border-outline-variant">
+<div class="text-outline text-label-caps font-label-caps mb-xs">UPLOADS</div>
+<div class="text-headline-md font-code-md text-on-surface">12 GB</div>
+</div>
+<div class="p-sm bg-background border border-outline-variant">
+<div class="text-outline text-label-caps font-label-caps mb-xs">API CALLS</div>
+<div class="text-headline-md font-code-md text-on-surface">4.2k</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-lowest flex items-center gap-md border-t border-outline-variant overflow-x-auto no-scrollbar">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-background flex items-center justify-center text-[10px] font-bold">JS</div>
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-background flex items-center justify-center text-[10px] font-bold">PY</div>
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-background flex items-center justify-center text-[10px] font-bold">TS</div>
+<div class="w-6 h-6 rounded-full bg-surface-variant border border-background flex items-center justify-center text-[10px] font-bold">GO</div>
+</div>
+<div class="text-code-sm font-code-sm text-outline whitespace-nowrap">Primary stack: TypeScript, Rust, Python</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Section -->
+<div class="mt-xl">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<h2 class="text-label-caps font-label-caps text-outline">RECENT ACTIVITY</h2>
+</div>
+<div class="space-y-px bg-outline-variant">
+<div class="bg-background flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-outline" data-icon="commit">commit</span>
+<div>
+<div class="text-body-md font-body-md text-on-surface">Refactor server/auth.ts for OAuth2 PKCE</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant">vercel/next.js • 14 mins ago</div>
+</div>
+</div>
+<div class="flex items-center gap-md opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-code-sm font-code-sm text-primary">+124 -12</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-on-surface">open_in_new</span>
+</div>
+</div>
+<div class="bg-background flex items-center justify-between p-md hover:bg-surface-container-lowest transition-colors group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-outline" data-icon="forum">forum</span>
+<div>
+<div class="text-body-md font-body-md text-on-surface">Explaining hydration mismatch in useServerInsertedHTML</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant">facebook/react • 2h ago</div>
+</div>
+</div>
+<div class="flex items-center gap-md opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-code-sm font-code-sm text-outline">4.2k tokens used</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-on-surface">open_in_new</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Interactive AI Thinking Mask -->
+<div class="fixed inset-0 pointer-events-none opacity-0 transition-opacity duration-1000 z-[60]" id="ai-mask">
+<div class="absolute inset-0 bg-primary/5"></div>
+<div class="absolute top-0 left-0 w-full h-[1px] bg-primary/50 animate-[scan_4s_linear_infinite]"></div>
+</div>
+<style>
+        @keyframes scan {
+            0% { transform: translateY(0vh); }
+            100% { transform: translateY(100vh); }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<script>
+        // Simple ambient effect
+        document.addEventListener('mousemove', (e) => {
+            const mask = document.getElementById('ai-mask');
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            mask.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(173, 198, 255, 0.03) 0%, transparent 40%)`;
+        });
+
+        // Toggle mask visibility on some interval to simulate "thinking"
+        setInterval(() => {
+            const mask = document.getElementById('ai-mask');
+            mask.classList.toggle('opacity-0');
+            setTimeout(() => mask.classList.toggle('opacity-0'), 2000);
+        }, 15000);
+    </script>
+</body></html>

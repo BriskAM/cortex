@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cortex | PR #1234</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0a0a0a;
+            color: #e1e2ec;
+            font-family: 'Geist', sans-serif;
+        }
+        .code-font {
+            font-family: 'Geist Mono', monospace;
+        }
+        /* Custom scrollbar for technical look */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #10131a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #32353c;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #424754;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-low": "#191b23",
+                      "inverse-surface": "#e1e2ec",
+                      "secondary-fixed": "#e2e2e2",
+                      "on-tertiary-fixed-variant": "#464747",
+                      "background": "#10131a",
+                      "tertiary-fixed-dim": "#c7c6c6",
+                      "on-tertiary": "#2f3131",
+                      "on-error": "#690005",
+                      "surface-dim": "#10131a",
+                      "on-primary-container": "#00285d",
+                      "secondary-container": "#454747",
+                      "on-surface": "#e1e2ec",
+                      "primary": "#adc6ff",
+                      "tertiary-fixed": "#e3e2e2",
+                      "on-secondary-container": "#b4b5b5",
+                      "on-secondary-fixed-variant": "#454747",
+                      "surface-variant": "#32353c",
+                      "tertiary-container": "#909191",
+                      "on-surface-variant": "#c2c6d6",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "surface-container-high": "#272a31",
+                      "error-container": "#93000a",
+                      "inverse-primary": "#005ac2",
+                      "error": "#ffb4ab",
+                      "outline-variant": "#424754",
+                      "primary-fixed": "#d8e2ff",
+                      "on-secondary": "#2f3131",
+                      "on-primary-fixed-variant": "#004395",
+                      "secondary": "#c6c6c7",
+                      "on-error-container": "#ffdad6",
+                      "tertiary": "#c7c6c6",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "surface-tint": "#adc6ff",
+                      "surface": "#10131a",
+                      "surface-bright": "#363941",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "surface-container-highest": "#32353c",
+                      "surface-container": "#1d2027",
+                      "on-primary": "#002e6a",
+                      "inverse-on-surface": "#2e3038",
+                      "on-primary-fixed": "#001a42",
+                      "on-background": "#e1e2ec",
+                      "primary-container": "#4d8eff",
+                      "outline": "#8c909f",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-tertiary-container": "#292a2a",
+                      "surface-container-lowest": "#0b0e15"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "unit": "4px",
+                      "xs": "4px",
+                      "gutter": "16px",
+                      "lg": "24px",
+                      "sidebar-width": "280px",
+                      "sm": "8px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Geist"],
+                      "label-caps": ["Geist"],
+                      "headline-lg": ["Geist"],
+                      "body-md": ["Geist"],
+                      "code-md": ["Geist Mono"],
+                      "body-sm": ["Geist"],
+                      "code-sm": ["Geist Mono"]
+              },
+              "fontSize": {
+                      "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+                      "code-md": ["13px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400"}],
+                      "code-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="flex overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter h-14 bg-background border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface">Cortex</span>
+<div class="hidden md:flex items-center gap-sm px-sm py-1 bg-surface-container rounded border border-outline-variant text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-[16px]">search</span>
+<span>Search repository...</span>
+<span class="ml-4 opacity-50">⌘K</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors text-label-caps font-label-caps">Sign in</button>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a software engineer with a neutral expression, set against a dark, tech-inspired studio background. The lighting is dramatic and low-key, featuring cool blue and sharp white highlights that match the technical minimalism of a high-end coding environment. The image uses high contrast and deep blacks to maintain visual cohesion with a developer-focused UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFvBmjPkfWpjSuk09SVObEQELNlRnct3Rp5B2NbrxoeO-eCoTpYyanFYNYK0JRBeyq9Wdp4nC8uWtPoD5yaJ4in-lbOtksFB_sUhZvq1dnjQu9nX9DmcgcpRcIW5SkayukynXZqlXsPfdx4fOx4VcOYFHQ9c7aW7bbKm1hrJz0VwINz0gQ7bN2AUt9taGg13Jh2wDYth4nlpNl-UNtVLVd889f-IDITVaVrJuC-0NYX5djIdHcm3Z92iiJGWPsR1JGOiTR3q5YNWY"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] z-40 flex flex-col pt-14 pb-4 bg-surface-container-low border-r border-outline-variant">
+<div class="px-md py-lg">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">terminal</span>
+</div>
+<div>
+<h2 class="text-headline-md font-headline-md text-on-surface">Cortex AI</h2>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Technical Intelligence</p>
+</div>
+</div>
+<button class="w-full py-2 mb-xl bg-primary text-on-primary font-bold rounded flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+<span class="text-label-caps font-label-caps">New Chat</span>
+</button>
+<nav class="space-y-1">
+<div class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 cursor-pointer rounded">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="text-label-caps font-label-caps">Recent Chats</span>
+</div>
+<div class="flex items-center gap-sm px-md py-2 bg-surface-container-highest text-primary border-r-2 border-primary transition-all duration-150 cursor-pointer rounded">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span class="text-label-caps font-label-caps">Saved Queries</span>
+</div>
+<div class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 cursor-pointer rounded">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="text-label-caps font-label-caps">Repositories</span>
+</div>
+<div class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-150 cursor-pointer rounded">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-caps font-label-caps">Settings</span>
+</div>
+</nav>
+</div>
+<div class="mt-auto px-md space-y-1">
+<div class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:text-on-surface transition-all duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-label-caps font-label-caps">Docs</span>
+</div>
+<div class="flex items-center gap-sm px-md py-2 text-on-surface-variant hover:text-on-surface transition-all duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="rate_review">rate_review</span>
+<span class="text-label-caps font-label-caps">Feedback</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area (Chat View) -->
+<main class="ml-[240px] mt-14 flex-1 flex flex-col h-[calc(100vh-56px)] bg-[#0a0a0a]">
+<!-- PR Context Banner -->
+<section class="border-b border-outline-variant bg-surface-container-low/50 px-xl py-md backdrop-blur-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md">
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-sm">
+<span class="text-primary font-bold px-2 py-0.5 bg-primary/10 rounded border border-primary/20 text-xs code-font">PR #1234</span>
+<h1 class="text-headline-md font-headline-md text-on-surface">Optimize SSR rendering</h1>
+</div>
+<div class="flex items-center gap-md text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                            Author <span class="text-on-surface font-semibold">@leerob</span>
+</span>
+<span class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">merge</span>
+                            Merged <span class="text-on-surface font-semibold">Jun 12</span>
+</span>
+</div>
+</div>
+<a class="flex items-center gap-xs text-primary hover:underline text-label-caps font-label-caps group" href="#">
+<span class="material-symbols-outlined text-[16px] transition-transform group-hover:-translate-x-1">arrow_back</span>
+                    Back to full repo chat
+                </a>
+</div>
+</section>
+<!-- Message History (Empty for fresh PR start) -->
+<section class="flex-1 overflow-y-auto p-xl space-y-xl flex flex-col items-center justify-center">
+<div class="max-w-2xl w-full text-center space-y-md">
+<div class="inline-flex p-4 rounded-full bg-surface-container-high border border-outline-variant mb-md">
+<span class="material-symbols-outlined text-[40px] text-primary">auto_awesome</span>
+</div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Analyze PR #1234</h2>
+<p class="text-body-md text-on-surface-variant">I've indexed the diff for this pull request. How can I help you understand the architectural changes or performance implications?</p>
+<div class="flex flex-wrap justify-center gap-sm mt-xl">
+<button class="px-md py-2 rounded border border-outline-variant bg-surface-container hover:border-primary/50 transition-colors text-label-caps font-label-caps flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">summarize</span>
+                        Explain this PR
+                    </button>
+<button class="px-md py-2 rounded border border-outline-variant bg-surface-container hover:border-primary/50 transition-colors text-label-caps font-label-caps flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+                        What could break?
+                    </button>
+<button class="px-md py-2 rounded border border-outline-variant bg-surface-container hover:border-primary/50 transition-colors text-label-caps font-label-caps flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">breaking_news</span>
+                        Is this a breaking change?
+                    </button>
+</div>
+</div>
+</section>
+<!-- Chat Input Section -->
+<section class="p-gutter border-t border-outline-variant bg-[#0a0a0a]">
+<div class="max-w-4xl mx-auto relative">
+<div class="absolute -top-12 left-0 right-0 flex justify-center opacity-40">
+<div class="h-[1px] w-full max-w-lg bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant focus-within:border-primary transition-colors p-md flex flex-col gap-sm rounded-lg">
+<textarea class="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/40 resize-none w-full body-md" placeholder="Ask a technical question about the PR #1234 diff..." rows="2"></textarea>
+<div class="flex items-center justify-between border-t border-outline-variant/30 pt-md mt-sm">
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">frame_source</span>
+</button>
+</div>
+<div class="flex items-center gap-md">
+<span class="text-[10px] text-on-surface-variant/40 code-font">Press <kbd class="px-1 py-0.5 rounded border border-outline-variant">↵</kbd> to send</span>
+<button class="bg-primary text-on-primary p-2 rounded hover:opacity-90 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Side Context Panel (Optional but useful for "Same layout as Chat View") -->
+<aside class="w-[320px] bg-surface-container-low border-l border-outline-variant hidden lg:flex flex-col overflow-y-auto pt-14">
+<div class="p-md border-b border-outline-variant bg-surface-container-high/30">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-xs">Diff Overview</h3>
+<div class="flex items-center gap-sm text-body-sm">
+<span class="text-green-400 font-bold">+1,240</span>
+<span class="text-red-400 font-bold">-184</span>
+<span class="text-on-surface-variant ml-auto">12 files changed</span>
+</div>
+</div>
+<div class="p-md space-y-lg">
+<div>
+<h4 class="text-label-caps font-label-caps text-on-surface-variant mb-md opacity-60">Changed Files</h4>
+<div class="space-y-2">
+<div class="group flex items-center gap-sm p-2 rounded hover:bg-surface-container-highest transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<span class="material-symbols-outlined text-[18px] text-primary">javascript</span>
+<span class="text-code-sm font-code-sm truncate">src/render/ssr.ts</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-green-500"></div>
+</div>
+<div class="group flex items-center gap-sm p-2 rounded hover:bg-surface-container-highest transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<span class="material-symbols-outlined text-[18px] text-primary">settings</span>
+<span class="text-code-sm font-code-sm truncate">next.config.js</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-yellow-500"></div>
+</div>
+<div class="group flex items-center gap-sm p-2 rounded hover:bg-surface-container-highest transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<span class="material-symbols-outlined text-[18px] text-primary">description</span>
+<span class="text-code-sm font-code-sm truncate">package.json</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-red-500"></div>
+</div>
+</div>
+</div>
+<div class="p-md bg-primary-container/10 border border-primary/20 rounded">
+<div class="flex items-center gap-sm text-primary mb-sm">
+<span class="material-symbols-outlined text-[18px]">lightbulb</span>
+<span class="text-label-caps font-label-caps">AI Observation</span>
+</div>
+<p class="text-body-sm text-on-surface-variant italic">
+                    The SSR optimization relies on a new caching layer. This might increase memory usage in high-traffic environments. 
+                </p>
+</div>
+</div>
+</aside>
+<script>
+        // Micro-interaction for input pulsing
+        const textarea = document.querySelector('textarea');
+        const container = textarea.parentElement;
+
+        textarea.addEventListener('focus', () => {
+            container.classList.add('ring-1', 'ring-primary/20');
+        });
+
+        textarea.addEventListener('blur', () => {
+            container.classList.remove('ring-1', 'ring-primary/20');
+        });
+
+        // Simulating the "Thinking" border animation mentioned in Brand Identity
+        function toggleThinking(state) {
+            if(state) {
+                container.classList.add('animate-pulse');
+                container.style.borderImage = 'linear-gradient(to right, #3b82f6, transparent) 1';
+            } else {
+                container.classList.remove('animate-pulse');
+                container.style.borderImage = 'none';
+            }
+        }
+    </script>
+</body></html>
