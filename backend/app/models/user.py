@@ -20,8 +20,21 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean(), default=True)
-    github_token = db.Column(db.Text, nullable=True) # Encrypted OAuth token
+    _github_token = db.Column('github_token', db.Text, nullable=True) # Encrypted OAuth token in DB
     fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False)
+    
+    @property
+    def github_token(self):
+        """Decrypt token when reading."""
+        from backend.app.utils.encryption import decrypt_token
+        return decrypt_token(self._github_token)
+
+    @github_token.setter
+    def github_token(self, value):
+        """Encrypt token when writing."""
+        from backend.app.utils.encryption import encrypt_token
+        self._github_token = encrypt_token(value)
+
     
     roles = db.relationship(
         'Role',

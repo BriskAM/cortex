@@ -5,8 +5,22 @@ from backend.app.config import DevConfig, ProdConfig
 from backend.app.extensions import db, migrate, security, cors, make_celery
 from backend.app.models.user import User, Role
 
+class BearerTokenMiddleware:
+    """WSGI middleware to normalize Bearer token headers before Flask parses them."""
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        auth_header = environ.get("HTTP_AUTHORIZATION", "")
+        if auth_header.startswith("Bearer "):
+            environ["HTTP_AUTHORIZATION"] = auth_header[7:]
+        return self.app(environ, start_response)
+
 def create_app(config_class=None):
     app = Flask(__name__)
+    
+    # Apply WSGI middleware
+    app.wsgi_app = BearerTokenMiddleware(app.wsgi_app)
     
     # Load configuration
     if config_class is None:
@@ -24,6 +38,17 @@ def create_app(config_class=None):
     # Initialize Flask-Security-Too datastore
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, user_datastore)
+
+    @security.unauthz_handler
+    def unauthorized(roles, permissions):
+        from flask import jsonify
+        return jsonify({"error": "Unauthorized"}), 401
+
+    if hasattr(app, 'login_manager'):
+        @app.login_manager.unauthorized_handler
+        def unauthorized_login():
+            from flask import jsonify
+            return jsonify({"error": "Unauthorized"}), 401
     
     # Initialize Celery configuration binding
     make_celery(app)

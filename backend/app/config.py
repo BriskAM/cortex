@@ -9,7 +9,7 @@ class Config:
     SECURITY_PASSWORD_SALT = os.getenv("SECURITY_PASSWORD_SALT", "change-me-salt-in-production")
     
     # SQLAlchemy Configuration
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql://user:pass@localhost:5432/cortex")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///cortex.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Celery Configuration
@@ -36,6 +36,13 @@ class Config:
     # Use headers for token-based auth
     SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authorization"
     SECURITY_TOKEN_MAX_AGE = 86400  # 1 day
+    SECURITY_FLASH_MESSAGES = False
+    SECURITY_REDIRECT_BEHAVIOR = "spa"
+    SECURITY_BLUEPRINT_REGISTER = False
+    SECURITY_HTTP_AUTHENTICATION_SCHEMES = ["bearer"]
+    SECURITY_UNAUTHORIZED_VIEW = None
+
+
 
 class DevConfig(Config):
     """Development Configuration"""

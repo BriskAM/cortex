@@ -9,7 +9,16 @@ const authStore = useAuthStore();
 const reposStore = useReposStore();
 
 onMounted(async () => {
-  await reposStore.fetchRepos();
+  if (!authStore.isAuthenticated) {
+    router.push('/');
+    return;
+  }
+  try {
+    await authStore.fetchMe();
+    await reposStore.fetchRepos();
+  } catch (err) {
+    router.push('/');
+  }
 });
 
 const handleLogout = () => {
