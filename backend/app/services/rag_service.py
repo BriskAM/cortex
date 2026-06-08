@@ -195,7 +195,8 @@ Question: {user_message}"""
             yield "Mock answer: Gemini API client not initialized. Check your GOOGLE_API_KEY.", sources
             return
 
-        max_retries = 2
+        max_retries = 3
+        backoff = 2
         for attempt in range(max_retries):
             try:
                 response_stream = self.client.models.generate_content_stream(
@@ -219,8 +220,11 @@ Question: {user_message}"""
                     continue
                 
                 if attempt < max_retries - 1:
-                    print("Transient error encountered. Waiting 2 seconds before retrying...")
+                    import random
+                    sleep_time = backoff + random.uniform(0, 1)
+                    print(f"Transient error encountered. Waiting {sleep_time:.2f} seconds before retrying...")
                     import time
-                    time.sleep(2)
+                    time.sleep(sleep_time)
+                    backoff *= 2
                 else:
                     yield f"Error calling LLM: {err_msg}", sources

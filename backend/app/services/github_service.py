@@ -1,5 +1,41 @@
 import os
-from github import Github
+import time
+import random
+from github import Github, GithubException
+
+def retry_github_call(max_retries=5, initial_backoff=2):
+    """Decorator to retry PyGithub calls with exponential backoff and jitter."""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            backoff = initial_backoff
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except GithubException as e:
+                    # Check if it's a rate limit / abuse protection (403/429) or server error (5xx)
+                    is_rate_limit = (e.status == 403 or e.status == 429)
+                    is_server_error = (e.status >= 500)
+                    
+                    if not (is_rate_limit or is_server_error):
+                        # Raise client errors (404, 401, etc.) immediately without retrying
+                        raise e
+                        
+                    if attempt == max_retries - 1:
+                        raise e
+                        
+                    # Exponential backoff with random jitter
+                    sleep_time = backoff + random.uniform(0, 1)
+                    if is_rate_limit:
+                        # Sleep longer for rate limit refreshes
+                        sleep_time = max(sleep_time, 15)
+                        
+                    print(f"[GitHubService] Call to {func.__name__} failed with status {e.status}. "
+                          f"Retrying in {sleep_time:.2f}s (attempt {attempt+1}/{max_retries})...")
+                    time.sleep(sleep_time)
+                    backoff *= 2
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 class GitHubService:
     def __init__(self, token=None):
@@ -30,6 +66,7 @@ class GitHubService:
             raise ValueError("GitHub client not initialized (missing token)")
         return self.gh.get_repo(f"{owner}/{repo_name}")
 
+    @retry_github_call(max_retries=5)
     def get_repo_details(self, owner, repo_name):
         """Fetch repository details from GitHub API."""
         repo = self._get_repo(owner, repo_name)
@@ -40,6 +77,7 @@ class GitHubService:
             "html_url": repo.html_url
         }
 
+    @retry_github_call(max_retries=5)
     def fetch_file_tree(self, owner, repo_name, branch="main"):
         """
         Recursively fetch files in the repository using git tree API.
@@ -90,6 +128,7 @@ class GitHubService:
                     
         return files_list, actual_branch
 
+    @retry_github_call(max_retries=5)
     def fetch_file_content(self, owner, repo_name, file_path, branch="main"):
         """Fetch content of a single file from the repository."""
         repo = self._get_repo(owner, repo_name)
@@ -103,6 +142,7 @@ class GitHubService:
             print(f"Failed to fetch content for {file_path}: {e}")
             return ""
 
+    @retry_github_call(max_retries=5)
     def fetch_last_100_prs(self, owner, repo_name):
         """Fetch last 100 merged pull requests, skipping bot accounts."""
         repo = self._get_repo(owner, repo_name)
@@ -152,6 +192,7 @@ class GitHubService:
             
         return merged_prs
 
+    @retry_github_call(max_retries=5)
     def get_pr_details(self, owner, repo_name, pr_number):
         """Fetch details of a single pull request from GitHub API."""
         repo = self._get_repo(owner, repo_name)
