@@ -81,6 +81,12 @@ cp .env.example .env
 ```
 *(If `GITHUB_TOKEN` is left blank, Cortex will automatically fallback to your active `gh auth token` session).*
 
+To enable **Sign In with GitHub**, register a new OAuth Application in your GitHub Developer Settings with the Authorization Callback URL set to `http://localhost:5173/auth/callback/github` and configure:
+```env
+GITHUB_CLIENT_ID=your_client_id
+GITHUB_CLIENT_SECRET=your_client_secret
+```
+
 ### 2. Start Redis
 ```bash
 redis-server --daemonize yes

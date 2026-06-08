@@ -20,7 +20,7 @@ def main():
     time.sleep(3)
     
     base_url = "http://127.0.0.1:5001/api/auth"
-    email = "test_e2e@cortex.dev"
+    email = f"test_e2e_{int(time.time())}@cortex.dev"
     password = "secure_password_123"
     
     try:

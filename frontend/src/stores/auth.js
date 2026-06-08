@@ -60,6 +60,20 @@ export const useAuthStore = defineStore('auth', {
         console.error('Failed to update settings:', error);
         throw error;
       }
+    },
+    async loginWithGithub(code) {
+      try {
+        const response = await apiClient.post('/auth/github/callback', { code });
+        this.token = response.data.token;
+        this.user = response.data.user;
+        
+        localStorage.setItem('cortex_token', this.token);
+        localStorage.setItem('cortex_user', JSON.stringify(this.user));
+        return true;
+      } catch (error) {
+        console.error('GitHub login failed:', error);
+        throw error;
+      }
     }
   },
 });

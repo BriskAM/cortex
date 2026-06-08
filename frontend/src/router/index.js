@@ -4,6 +4,7 @@ import LandingView from '../views/LandingView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import RepoView from '../views/RepoView.vue';
 import PrView from '../views/PrView.vue';
+import GithubCallbackView from '../views/GithubCallbackView.vue';
 
 const routes = [
   {
@@ -26,6 +27,11 @@ const routes = [
     path: '/:owner/:repo/pr/:number',
     name: 'pr',
     component: PrView,
+  },
+  {
+    path: '/auth/callback/github',
+    name: 'github-callback',
+    component: GithubCallbackView,
   },
 ];
 
