@@ -3,7 +3,26 @@ from github import Github
 
 class GitHubService:
     def __init__(self, token=None):
-        self.token = token or os.getenv("GITHUB_TOKEN")
+        if token:
+            self.token = token
+        else:
+            self.token = os.getenv("GITHUB_TOKEN")
+            
+            if not self.token:
+                try:
+                    from flask import current_app
+                    if current_app:
+                        self.token = current_app.config.get("GITHUB_TOKEN")
+                except Exception:
+                    pass
+                    
+            if not self.token:
+                try:
+                    import subprocess
+                    self.token = subprocess.check_output(["gh", "auth", "token"]).decode("utf-8").strip()
+                except Exception:
+                    pass
+                    
         self.gh = Github(self.token) if self.token else None
 
     def _get_repo(self, owner, repo_name):
@@ -27,13 +46,15 @@ class GitHubService:
         Applies filter criteria to exclude node_modules, lock files, and binaries.
         """
         repo = self._get_repo(owner, repo_name)
+        actual_branch = branch
         try:
             # Retrieve git tree recursively
             git_ref = repo.get_branch(branch).commit.sha
             tree_root = repo.get_git_tree(git_ref, recursive=True)
         except Exception as e:
             # Fall back to default branch if 'main' or branch is not found
-            git_ref = repo.get_branch(repo.default_branch).commit.sha
+            actual_branch = repo.default_branch
+            git_ref = repo.get_branch(actual_branch).commit.sha
             tree_root = repo.get_git_tree(git_ref, recursive=True)
 
         keep_extensions = {
@@ -67,7 +88,7 @@ class GitHubService:
                         "size": element.size
                     })
                     
-        return files_list
+        return files_list, actual_branch
 
     def fetch_file_content(self, owner, repo_name, file_path, branch="main"):
         """Fetch content of a single file from the repository."""
@@ -130,3 +151,25 @@ class GitHubService:
             })
             
         return merged_prs
+
+    def get_pr_details(self, owner, repo_name, pr_number):
+        """Fetch details of a single pull request from GitHub API."""
+        repo = self._get_repo(owner, repo_name)
+        pr = repo.get_pull(pr_number)
+        files_changed = []
+        try:
+            pr_files = pr.get_files()
+            for idx, f in enumerate(pr_files):
+                if idx >= 50:
+                    break
+                files_changed.append(f.filename)
+        except Exception:
+            pass
+        return {
+            "pr_number": pr.number,
+            "pr_title": pr.title,
+            "pr_body": pr.body or "",
+            "pr_author": pr.user.login,
+            "merged_at": pr.merged_at.isoformat() if pr.merged_at else None,
+            "files_changed": files_changed
+        }

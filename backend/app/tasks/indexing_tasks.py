@@ -6,7 +6,7 @@ from backend.app.services.indexer_service import IndexerService
 from backend.app.services.pr_service import PRService
 from backend.app.services.chroma_service import ChromaService
 
-@celery.task(bind=True)
+@celery.task(bind=True, ignore_result=False)
 def index_repository(self, repo_id):
     """
     Celery task that runs the indexing pipeline for a repository:
@@ -49,7 +49,12 @@ def index_repository(self, repo_id):
         # --- STEP 1: FETCH FILES ---
         update_progress('PROGRESS', 'fetching_files', 5)
         print(f"[{repo.owner}/{repo.repo_name}] Fetching git tree...")
-        file_tree = github_service.fetch_file_tree(repo.owner, repo.repo_name, repo.branch)
+        file_tree, actual_branch = github_service.fetch_file_tree(repo.owner, repo.repo_name, repo.branch)
+        
+        if repo.branch != actual_branch:
+            print(f"[{repo.owner}/{repo.repo_name}] Branch fallback detected: switching branch from '{repo.branch}' to '{actual_branch}'")
+            repo.branch = actual_branch
+            db.session.commit()
         
         # --- STEP 2: CHUNK CODE ---
         update_progress('PROGRESS', 'chunking_code', 20)

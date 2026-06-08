@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
+import hljs from 'highlight.js';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -15,6 +16,38 @@ const activeTab = ref('code'); // 'code' | 'prs'
 
 const codeSources = computed(() => props.sources.filter(s => s.type === 'code'));
 const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
+
+const getLanguageFromFilename = (filename) => {
+  if (!filename) return 'text';
+  const ext = filename.split('.').pop().toLowerCase();
+  const mapping = {
+    'py': 'python',
+    'js': 'javascript',
+    'ts': 'typescript',
+    'jsx': 'javascript',
+    'tsx': 'typescript',
+    'vue': 'xml',
+    'html': 'xml',
+    'java': 'java',
+    'go': 'go',
+    'rs': 'rust',
+    'md': 'markdown',
+    'sql': 'sql',
+    'tex': 'latex',
+    'sh': 'bash'
+  };
+  return mapping[ext] || 'text';
+};
+
+const highlightCode = (code, language) => {
+  const lang = language || 'text';
+  if (lang && hljs.getLanguage(lang)) {
+    try {
+      return hljs.highlight(code, { language: lang }).value;
+    } catch (__) {}
+  }
+  return hljs.highlightAuto(code).value;
+};
 </script>
 
 <template>
@@ -48,7 +81,7 @@ const prSources = computed(() => props.sources.filter(s => s.type === 'pr'));
               <span class="file-path">{{ source.file }}</span>
               <span class="lines">Lines {{ source.start_line }}-{{ source.end_line }}</span>
             </div>
-            <pre class="snippet"><code>{{ source.snippet }}</code></pre>
+            <pre class="snippet"><code class="hljs" v-html="highlightCode(source.snippet, source.language || getLanguageFromFilename(source.file))"></code></pre>
           </div>
         </div>
       </div>

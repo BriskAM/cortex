@@ -13,6 +13,7 @@ class IndexedRepo(db.Model):
     status = db.Column(db.String(50), default='pending') # pending | indexing | ready | failed
     is_public = db.Column(db.Boolean, default=True)
     chroma_collection = db.Column(db.String(100), unique=True, nullable=False)
+    celery_job_id = db.Column(db.String(100), nullable=True)
     file_count = db.Column(db.Integer, default=0)
     chunk_count = db.Column(db.Integer, default=0)
     pr_count = db.Column(db.Integer, default=0)

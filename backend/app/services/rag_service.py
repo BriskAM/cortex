@@ -118,7 +118,8 @@ class RAGService:
                     "file": meta.get("file_path"),
                     "start_line": int(meta.get("start_line", 1)),
                     "end_line": int(meta.get("end_line", 1)),
-                    "snippet": c["content"]
+                    "snippet": c["content"],
+                    "language": meta.get("language", "text")
                 })
             else:
                 meta = c["metadata"]
@@ -194,34 +195,32 @@ Question: {user_message}"""
             yield "Mock answer: Gemini API client not initialized. Check your GOOGLE_API_KEY.", sources
             return
 
-        try:
-            response_stream = self.client.models.generate_content_stream(
-                model=model_name,
-                contents=user_prompt,
-                config=config
-            )
-            for chunk in response_stream:
-                if chunk.text:
-                    yield chunk.text, sources
-        except Exception as e:
-            err_msg = str(e)
-            print(f"Gemini LLM stream call failed: {err_msg}")
-            # Check if thinking config is present and was likely the cause of the failure
-            has_thinking = hasattr(config, 'thinking_config') and config.thinking_config is not None
-            if has_thinking and ("thinking" in err_msg.lower() or "400" in err_msg or "invalid_argument" in err_msg.lower()):
-                print("Retrying LLM generation without thinking config...")
-                config.thinking_config = None
-                try:
-                    response_stream = self.client.models.generate_content_stream(
-                        model=model_name,
-                        contents=user_prompt,
-                        config=config
-                    )
-                    for chunk in response_stream:
-                        if chunk.text:
-                            yield chunk.text, sources
-                except Exception as retry_err:
-                    print(f"Fallback Gemini LLM stream call failed: {retry_err}")
-                    yield f"Error calling LLM: {str(retry_err)}", sources
-            else:
-                yield f"Error calling LLM: {err_msg}", sources
+        max_retries = 2
+        for attempt in range(max_retries):
+            try:
+                response_stream = self.client.models.generate_content_stream(
+                    model=model_name,
+                    contents=user_prompt,
+                    config=config
+                )
+                for chunk in response_stream:
+                    if chunk.text:
+                        yield chunk.text, sources
+                return
+            except Exception as e:
+                err_msg = str(e)
+                print(f"Gemini LLM stream call failed (attempt {attempt+1}/{max_retries}): {err_msg}")
+                
+                # If thinking config is set and was likely the cause of a 400 error, disable it and retry immediately
+                has_thinking = hasattr(config, 'thinking_config') and config.thinking_config is not None
+                if has_thinking and ("thinking" in err_msg.lower() or "400" in err_msg or "invalid_argument" in err_msg.lower()):
+                    print("Retrying generation without thinking config...")
+                    config.thinking_config = None
+                    continue
+                
+                if attempt < max_retries - 1:
+                    print("Transient error encountered. Waiting 2 seconds before retrying...")
+                    import time
+                    time.sleep(2)
+                else:
+                    yield f"Error calling LLM: {err_msg}", sources

@@ -72,3 +72,6 @@ DESIGN.md
 PLAN.md
 interface-spec/
 
+# Redis
+dump.rdb
+

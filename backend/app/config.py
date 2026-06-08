@@ -21,9 +21,19 @@ class Config:
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
     EMBEDDING_DIMENSIONS = int(os.getenv("EMBEDDING_DIMENSIONS", "1536"))
     LLM_MODEL = os.getenv("LLM_MODEL", "gemma-4-26b-a4b-it")
-    
     # GitHub Token
-    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+    @classmethod
+    def get_github_token(cls):
+        token = os.getenv("GITHUB_TOKEN")
+        if token:
+            return token
+        try:
+            import subprocess
+            return subprocess.check_output(["gh", "auth", "token"]).decode("utf-8").strip()
+        except Exception:
+            return None
+
+    GITHUB_TOKEN = get_github_token.__func__(None)
     
     # ChromaDB Configuration
     CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_data")

@@ -16,6 +16,30 @@ const prData = ref(null);
 const isLoading = ref(true);
 const activeSessionId = ref(null);
 
+const panelWidth = ref(parseInt(localStorage.getItem('cortex-pr-panel-width')) || 380);
+
+const startResize = (e) => {
+  e.preventDefault();
+  const startX = e.clientX;
+  const startWidth = panelWidth.value;
+
+  const doDrag = (dragEvent) => {
+    const newWidth = startWidth + (dragEvent.clientX - startX);
+    if (newWidth >= 250 && newWidth <= 800) {
+      panelWidth.value = newWidth;
+    }
+  };
+
+  const stopDrag = () => {
+    document.removeEventListener('mousemove', doDrag);
+    document.removeEventListener('mouseup', stopDrag);
+    localStorage.setItem('cortex-pr-panel-width', panelWidth.value);
+  };
+
+  document.addEventListener('mousemove', doDrag);
+  document.addEventListener('mouseup', stopDrag);
+};
+
 const starterQuestions = [
   "Explain this PR's overall goals.",
   "Are there any architectural concerns or potential breaking changes?",
@@ -32,7 +56,7 @@ const loadPrDetails = async () => {
     prData.value = response.data;
     
     // Create a PR-scoped chat session
-    const session = await chatStore.createSession(1, 'pr', prNumber.value);
+    const session = await chatStore.createSession(prData.value.repo_id, 'pr', prNumber.value);
     activeSessionId.value = session.id;
   } catch (error) {
     console.error('Failed to load PR details:', error);
@@ -59,7 +83,7 @@ onMounted(loadPrDetails);
 
     <div v-else class="pr-workspace">
       <!-- Left Metadata Panel -->
-      <aside class="metadata-panel">
+      <aside class="metadata-panel" :style="{ width: panelWidth + 'px' }">
         <div class="panel-header">
           <router-link :to="`/${owner}/${repo}`" class="back-link">
             &larr; Back to full repo chat
@@ -87,6 +111,9 @@ onMounted(loadPrDetails);
           </ul>
         </div>
       </aside>
+
+      <!-- Splitter drag handle -->
+      <div class="resize-handle" @mousedown="startResize"></div>
 
       <!-- Right Chat Area -->
       <main class="chat-area">
@@ -152,14 +179,40 @@ onMounted(loadPrDetails);
 }
 
 .metadata-panel {
-  width: 380px;
   background: var(--surface-container-low);
-  border-right: 1px solid var(--outline-variant);
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
   overflow-y: auto;
   flex-shrink: 0;
+}
+
+.resize-handle {
+  width: 6px;
+  cursor: col-resize;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  background: transparent;
+  margin-left: -3px;
+  margin-right: -3px;
+  user-select: none;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 2px;
+  height: 100%;
+  background: var(--outline-variant);
+  transition: background-color 0.15s ease;
+}
+
+.resize-handle:hover::after,
+.resize-handle:active::after {
+  background: var(--primary);
 }
 
 .panel-header {

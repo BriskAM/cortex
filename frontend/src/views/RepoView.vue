@@ -12,12 +12,39 @@ const router = useRouter();
 const reposStore = useReposStore();
 const chatStore = useChatStore();
 
-const viewState = ref('loading'); // 'loading' | 'not_found' | 'indexing' | 'ready'
+const viewState = ref('loading'); // 'loading' | 'not_found' | 'indexing' | 'ready' | 'failed'
 const owner = ref('');
 const repo = ref('');
 const repoId = ref(null);
 const indexingStage = ref('');
 const indexingProgress = ref(0);
+const indexingError = ref('');
+const consecutiveFailures = ref(0);
+const maxFailures = 5;
+
+const sidebarWidth = ref(parseInt(localStorage.getItem('cortex-sidebar-width')) || 280);
+
+const startResize = (e) => {
+  e.preventDefault();
+  const startX = e.clientX;
+  const startWidth = sidebarWidth.value;
+
+  const doDrag = (dragEvent) => {
+    const newWidth = startWidth + (dragEvent.clientX - startX);
+    if (newWidth >= 200 && newWidth <= 600) {
+      sidebarWidth.value = newWidth;
+    }
+  };
+
+  const stopDrag = () => {
+    document.removeEventListener('mousemove', doDrag);
+    document.removeEventListener('mouseup', stopDrag);
+    localStorage.setItem('cortex-sidebar-width', sidebarWidth.value);
+  };
+
+  document.addEventListener('mousemove', doDrag);
+  document.addEventListener('mouseup', stopDrag);
+};
 
 let pollInterval = null;
 
@@ -33,6 +60,7 @@ const checkStatus = async () => {
       viewState.value = 'ready';
       await loadChatSession();
     } else if (data.status === 'indexing') {
+      repoId.value = data.repo_id;
       viewState.value = 'indexing';
       startPolling(data.job_id);
     } else {
@@ -45,24 +73,58 @@ const checkStatus = async () => {
 
 const startPolling = (jobId) => {
   if (pollInterval) clearInterval(pollInterval);
+  consecutiveFailures.value = 0;
   
   pollInterval = setInterval(async () => {
     try {
       const jobData = await reposStore.checkJobStatus(jobId);
+      consecutiveFailures.value = 0; // Reset on success
+      
       indexingStage.value = jobData.stage;
       indexingProgress.value = jobData.progress;
       
-      if (jobData.status === 'SUCCESS' || jobData.progress === 100) {
+      if (jobData.status === 'SUCCESS' || jobData.stage === 'done') {
         clearInterval(pollInterval);
         await checkStatus(); // Recheck status to transition to ready state
       } else if (jobData.status === 'FAILURE') {
         clearInterval(pollInterval);
-        viewState.value = 'not_found';
+        viewState.value = 'failed';
+        indexingError.value = jobData.error || 'Indexing task failed. Please check the backend/Celery logs.';
       }
     } catch (err) {
-      clearInterval(pollInterval);
+      consecutiveFailures.value++;
+      if (consecutiveFailures.value >= maxFailures) {
+        clearInterval(pollInterval);
+        viewState.value = 'failed';
+        indexingError.value = 'Connection lost. Unable to retrieve indexing progress.';
+      }
     }
   }, 2000);
+};
+
+const retryIndexing = async () => {
+  viewState.value = 'loading';
+  try {
+    const data = await reposStore.checkRepoStatus(owner.value, repo.value);
+    if (data.repo_id) {
+      repoId.value = data.repo_id;
+      const reindexData = await reposStore.triggerReindex(repoId.value);
+      if (reindexData.job_id) {
+        viewState.value = 'indexing';
+        indexingProgress.value = 0;
+        indexingStage.value = 'fetching_files';
+        startPolling(reindexData.job_id);
+      } else {
+        viewState.value = 'failed';
+        indexingError.value = 'Failed to trigger re-indexing.';
+      }
+    } else {
+      await checkStatus();
+    }
+  } catch (err) {
+    viewState.value = 'failed';
+    indexingError.value = 'Failed to retry indexing: ' + (err.response?.data?.error || err.message);
+  }
 };
 
 const loadChatSession = async () => {
@@ -96,6 +158,25 @@ const deleteSession = async (sessionId) => {
   }
 };
 
+const handleReindex = async () => {
+  if (!repoId.value) return;
+  if (confirm('Are you sure you want to trigger a full re-indexing of this repository?')) {
+    try {
+      const data = await reposStore.triggerReindex(repoId.value);
+      if (data.job_id) {
+        viewState.value = 'indexing';
+        indexingProgress.value = 0;
+        indexingStage.value = 'fetching_files';
+        startPolling(data.job_id);
+      } else {
+        alert('Failed to trigger re-indexing.');
+      }
+    } catch (err) {
+      alert('Failed to trigger re-indexing: ' + (err.response?.data?.error || err.message));
+    }
+  }
+};
+
 onMounted(checkStatus);
 
 watch(() => route.params.repo, checkStatus);
@@ -114,6 +195,19 @@ onUnmounted(() => {
 
     <RepoNotFound v-else-if="viewState === 'not_found'" :owner="owner" :repo="repo" />
 
+    <div v-else-if="viewState === 'failed'" class="failed-screen">
+      <div class="card glass-card">
+        <div class="icon">❌</div>
+        <h2>Indexing Failed</h2>
+        <p class="error-msg">{{ indexingError }}</p>
+        <p class="hint">You can try restarting the indexing process.</p>
+        <div class="button-group">
+          <button @click="retryIndexing" class="btn btn-primary">Retry Indexing</button>
+          <router-link to="/" class="btn btn-secondary">Go Back Home</router-link>
+        </div>
+      </div>
+    </div>
+
     <IndexingProgress 
       v-else-if="viewState === 'indexing'" 
       :stage="indexingStage" 
@@ -122,7 +216,7 @@ onUnmounted(() => {
 
     <div v-else-if="viewState === 'ready'" class="app-workspace">
       <!-- Sidebar -->
-      <aside class="sidebar">
+      <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
         <div class="sidebar-header">
           <h2 class="logo-title" @click="router.push('/')">Cortex</h2>
           <span class="repo-badge">{{ owner }}/{{ repo }}</span>
@@ -143,6 +237,9 @@ onUnmounted(() => {
         </div>
       </aside>
 
+      <!-- Splitter drag handle -->
+      <div class="resize-handle" @mousedown="startResize"></div>
+
       <!-- Main chat workspace -->
       <main class="chat-workspace">
         <header class="workspace-header">
@@ -150,6 +247,9 @@ onUnmounted(() => {
             <h3>{{ chatStore.currentSession?.title || 'Chat' }}</h3>
           </div>
           <div class="actions">
+            <button @click="handleReindex" class="btn-reindex">
+              Re-Index
+            </button>
             <router-link :to="`/${owner}/${repo}/pr/1`" class="btn-pr-link">
               Try PR Chat
             </router-link>
@@ -202,13 +302,40 @@ onUnmounted(() => {
 }
 
 .sidebar {
-  width: 280px;
   background: var(--surface-container-low);
-  border-right: 1px solid var(--outline-variant);
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.resize-handle {
+  width: 6px;
+  cursor: col-resize;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  background: transparent;
+  margin-left: -3px;
+  margin-right: -3px;
+  user-select: none;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 2px;
+  height: 100%;
+  background: var(--outline-variant);
+  transition: background-color 0.15s ease;
+}
+
+.resize-handle:hover::after,
+.resize-handle:active::after {
+  background: var(--primary);
 }
 
 .sidebar-header {
@@ -367,10 +494,88 @@ onUnmounted(() => {
   border-color: var(--outline);
 }
 
+.btn-reindex {
+  margin-right: 15px;
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--outline-variant);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-reindex:hover {
+  color: var(--on-surface);
+  border-color: var(--outline);
+}
+
 .chat-container {
   flex: 1;
   padding: 1.5rem;
   overflow: hidden;
   background: var(--background);
+}
+
+.failed-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: var(--background);
+  color: var(--on-surface);
+}
+
+.failed-screen .card {
+  text-align: center;
+  max-width: 450px;
+  width: 100%;
+  padding: 3rem 2rem;
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.failed-screen .icon {
+  font-size: 3rem;
+}
+
+.failed-screen h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.failed-screen .error-msg {
+  color: var(--error);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  background: rgba(255, 180, 171, 0.1);
+  border: 1px solid var(--error);
+  padding: 12px;
+  width: 100%;
+  text-align: left;
+  white-space: pre-wrap;
+  margin: 0.5rem 0;
+}
+
+.failed-screen .hint {
+  font-size: 0.85rem;
+  color: var(--outline);
+}
+
+.failed-screen .button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.failed-screen .button-group .btn {
+  flex: 1;
 }
 </style>

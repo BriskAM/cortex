@@ -2,6 +2,17 @@
 import { ref, onUpdated, nextTick } from 'vue';
 import { useChatStore } from '../stores/chat';
 import SourceDrawer from './SourceDrawer.vue';
+import { marked } from 'marked';
+
+marked.setOptions({
+  gfm: true,
+  breaks: true
+});
+
+const renderMarkdown = (text) => {
+  if (!text) return '';
+  return marked.parse(text);
+};
 
 const props = defineProps({
   sessionId: {
@@ -56,7 +67,7 @@ const openSources = (sources) => {
       >
         <div class="avatar">{{ msg.role === 'user' ? 'U' : 'AI' }}</div>
         <div class="content-wrapper">
-          <div class="message-content">{{ msg.content }}</div>
+          <div class="message-content markdown-body" v-html="renderMarkdown(msg.content)"></div>
           
           <div v-if="msg.sources && msg.sources.length > 0" class="source-citation">
             <button @click="openSources(msg.sources)" class="btn-sources">
@@ -70,7 +81,7 @@ const openSources = (sources) => {
       <div v-if="chatStore.isStreaming" class="message-bubble assistant streaming">
         <div class="avatar">AI</div>
         <div class="content-wrapper">
-          <div class="message-content">{{ chatStore.streamingContent }}<span class="cursor">|</span></div>
+          <div class="message-content markdown-body" v-html="renderMarkdown(chatStore.streamingContent) + '<span class=&quot;cursor&quot;>|</span>'"></div>
         </div>
       </div>
     </div>
@@ -133,6 +144,31 @@ const openSources = (sources) => {
   gap: 1rem;
   max-width: 85%;
   align-self: flex-start;
+  animation: message-slide-up 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes message-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-bubble.assistant.streaming .content-wrapper {
+  animation: thinking-pulse 1.8s infinite ease-in-out;
+}
+
+@keyframes thinking-pulse {
+  0%, 100% {
+    border-color: var(--outline-variant);
+  }
+  50% {
+    border-color: var(--primary);
+  }
 }
 
 .message-bubble.user {
@@ -253,5 +289,79 @@ const openSources = (sources) => {
 @keyframes blink {
   from, to { color: transparent }
   50% { color: var(--primary); }
+}
+
+.markdown-body :deep(h1), 
+.markdown-body :deep(h2), 
+.markdown-body :deep(h3), 
+.markdown-body :deep(h4) {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+.markdown-body :deep(h1) { font-size: 1.3rem; }
+.markdown-body :deep(h2) { font-size: 1.15rem; }
+.markdown-body :deep(h3) { font-size: 1.05rem; }
+.markdown-body :deep(h4) { font-size: 0.95rem; }
+
+.markdown-body :deep(p) {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  color: var(--on-surface-variant);
+}
+
+.markdown-body :deep(ul), 
+.markdown-body :deep(ol) {
+  margin-left: 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.markdown-body :deep(li) {
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+}
+
+.markdown-body :deep(strong) {
+  color: var(--on-surface);
+  font-weight: 600;
+}
+
+.markdown-body :deep(code) {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  padding: 2px 6px;
+  color: var(--primary);
+}
+
+.markdown-body :deep(pre) {
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  padding: 12px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.markdown-body :deep(pre code) {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--on-surface);
+}
+
+.markdown-body :deep(a) {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.markdown-body :deep(a:hover) {
+  color: var(--on-surface);
 }
 </style>
