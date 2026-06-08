@@ -48,6 +48,18 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         this.logout();
       }
+    },
+    async updateSettings(settings) {
+      if (!this.token) return;
+      try {
+        const response = await apiClient.post('/auth/settings', settings);
+        this.user = response.data.user;
+        localStorage.setItem('cortex_user', JSON.stringify(this.user));
+        return response.data;
+      } catch (error) {
+        console.error('Failed to update settings:', error);
+        throw error;
+      }
     }
   },
 });

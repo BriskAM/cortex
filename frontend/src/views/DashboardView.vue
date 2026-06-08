@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useReposStore } from '../stores/repos';
@@ -7,6 +7,11 @@ import { useReposStore } from '../stores/repos';
 const router = useRouter();
 const authStore = useAuthStore();
 const reposStore = useReposStore();
+
+const githubTokenInput = ref('');
+const isSavingSettings = ref(false);
+const settingsMessage = ref('');
+const settingsError = ref('');
 
 onMounted(async () => {
   if (!authStore.isAuthenticated) {
@@ -40,6 +45,37 @@ const handleReindex = async (id) => {
   await reposStore.triggerReindex(id);
   alert('Re-indexing task queued.');
 };
+
+const saveSettings = async () => {
+  isSavingSettings.value = true;
+  settingsMessage.value = '';
+  settingsError.value = '';
+  try {
+    await authStore.updateSettings({ github_token: githubTokenInput.value });
+    githubTokenInput.value = '';
+    settingsMessage.value = 'Token saved successfully.';
+  } catch (err) {
+    settingsError.value = err.response?.data?.error || 'Failed to save settings.';
+  } finally {
+    isSavingSettings.value = false;
+  }
+};
+
+const clearToken = async () => {
+  if (confirm('Are you sure you want to clear your GitHub Access Token?')) {
+    isSavingSettings.value = true;
+    settingsMessage.value = '';
+    settingsError.value = '';
+    try {
+      await authStore.updateSettings({ github_token: '' });
+      settingsMessage.value = 'Token cleared successfully.';
+    } catch (err) {
+      settingsError.value = err.response?.data?.error || 'Failed to clear settings.';
+    } finally {
+      isSavingSettings.value = false;
+    }
+  }
+};
 </script>
 
 <template>
@@ -55,39 +91,93 @@ const handleReindex = async (id) => {
       </div>
     </header>
 
-    <main class="dashboard-content">
-      <div class="section-title">
-        <h2>Your Indexed Repositories</h2>
-      </div>
+    <main class="dashboard-content grid-layout">
+      <!-- Repositories List -->
+      <section class="repos-section">
+        <div class="section-title">
+          <h2>Your Indexed Repositories</h2>
+        </div>
 
-      <div v-if="reposStore.repos.length === 0" class="empty-state glass-card">
-        <p>No repositories indexed yet.</p>
-        <button @click="router.push('/')" class="btn btn-primary">Index your first repository</button>
-      </div>
+        <div v-if="reposStore.repos.length === 0" class="empty-state glass-card">
+          <p>No repositories indexed yet.</p>
+          <button @click="router.push('/')" class="btn btn-primary">Index your first repository</button>
+        </div>
 
-      <div v-else class="repo-grid">
-        <div v-for="repo in reposStore.repos" :key="repo.id" class="repo-card glass-card">
-          <div class="repo-info">
-            <h3 @click="navigateToRepo(repo.owner, repo.repo_name)" class="repo-name-link">
-              {{ repo.owner }} / {{ repo.repo_name }}
-            </h3>
-            <p class="repo-url">{{ repo.github_url }}</p>
-            <div class="repo-stats">
-              <span>Files: <strong>{{ repo.file_count }}</strong></span>
-              <span>Chunks: <strong>{{ repo.chunk_count }}</strong></span>
-              <span>PRs: <strong>{{ repo.pr_count }}</strong></span>
+        <div v-else class="repo-grid">
+          <div v-for="repo in reposStore.repos" :key="repo.id" class="repo-card glass-card">
+            <div class="repo-info">
+              <h3 @click="navigateToRepo(repo.owner, repo.repo_name)" class="repo-name-link">
+                {{ repo.owner }} / {{ repo.repo_name }}
+              </h3>
+              <p class="repo-url">{{ repo.github_url }}</p>
+              <div class="repo-stats">
+                <span>Files: <strong>{{ repo.file_count }}</strong></span>
+                <span>Chunks: <strong>{{ repo.chunk_count }}</strong></span>
+                <span>PRs: <strong>{{ repo.pr_count }}</strong></span>
+              </div>
+              <div class="status-row">
+                <span class="label">Status:</span>
+                <span :class="['status-badge', repo.status]">{{ repo.status }}</span>
+              </div>
             </div>
-            <div class="status-row">
-              <span class="label">Status:</span>
-              <span :class="['status-badge', repo.status]">{{ repo.status }}</span>
+            <div class="repo-actions">
+              <button @click="handleReindex(repo.id)" class="btn btn-action">Re-Index</button>
+              <button @click="handleDelete(repo.id)" class="btn btn-danger">Delete</button>
             </div>
-          </div>
-          <div class="repo-actions">
-            <button @click="handleReindex(repo.id)" class="btn btn-action">Re-Index</button>
-            <button @click="handleDelete(repo.id)" class="btn btn-danger">Delete</button>
           </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Settings Panel -->
+      <aside class="settings-section">
+        <div class="section-title">
+          <h2>Configuration Settings</h2>
+        </div>
+
+        <div class="settings-card glass-card">
+          <h3>GitHub Token Settings</h3>
+          <p class="settings-description">
+            Configure a GitHub Personal Access Token (PAT) with <code>read:repo</code> scope. This is encrypted in the database and preferred during repository crawl operations.
+          </p>
+
+          <div class="status-indicator">
+            <span class="label">Token Status:</span>
+            <span v-if="authStore.user?.has_github_token" class="status-badge ready">✓ Active</span>
+            <span v-else class="status-badge failed">✗ None Configured</span>
+          </div>
+
+          <form @submit.prevent="saveSettings" class="token-form">
+            <div class="form-group">
+              <label>Personal Access Token</label>
+              <input 
+                v-model="githubTokenInput" 
+                type="password" 
+                placeholder="ghp_..." 
+                required
+                class="token-input"
+              />
+            </div>
+
+            <div class="btn-group">
+              <button type="submit" class="btn btn-primary" :disabled="isSavingSettings">
+                {{ isSavingSettings ? 'Saving...' : 'Save Token' }}
+              </button>
+              <button 
+                v-if="authStore.user?.has_github_token" 
+                type="button" 
+                @click="clearToken" 
+                class="btn btn-danger-outline" 
+                :disabled="isSavingSettings"
+              >
+                Clear Token
+              </button>
+            </div>
+          </form>
+
+          <p v-if="settingsMessage" class="feedback-msg success">{{ settingsMessage }}</p>
+          <p v-if="settingsError" class="feedback-msg error">{{ settingsError }}</p>
+        </div>
+      </aside>
     </main>
   </div>
 </template>
@@ -162,6 +252,116 @@ const handleReindex = async (id) => {
 .dashboard-content {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.settings-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.settings-description {
+  font-size: 0.85rem;
+  color: var(--on-surface-variant);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.status-indicator .label {
+  color: var(--on-surface-variant);
+}
+
+.token-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.token-input {
+  width: 100%;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  padding: 10px 12px;
+  color: var(--on-surface);
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease;
+}
+
+.token-input:focus {
+  border-color: var(--primary);
+}
+
+.btn-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-group .btn {
+  flex: 1;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  color: var(--error);
+  border: 1px solid var(--error);
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.btn-danger-outline:hover {
+  background: rgba(255, 180, 171, 0.1);
+}
+
+.feedback-msg {
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+}
+
+.feedback-msg.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.feedback-msg.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .section-title {

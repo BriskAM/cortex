@@ -100,3 +100,32 @@ def me():
             "has_github_token": bool(current_user._github_token)
         }
     }), 200
+
+@auth_bp.route('/settings', methods=['POST'])
+@auth_token_required
+def update_settings():
+    """Update user settings like GitHub OAuth token."""
+    data = request.get_json() or {}
+    github_token = data.get('github_token')
+    
+    # Allow clearing the token by passing empty string/None
+    if 'github_token' in data:
+        if github_token:
+            current_user.github_token = github_token.strip()
+        else:
+            current_user._github_token = None
+            
+    try:
+        db.session.commit()
+        return jsonify({
+            "message": "Settings updated successfully",
+            "user": {
+                "id": current_user.id,
+                "email": current_user.email,
+                "active": current_user.active,
+                "has_github_token": bool(current_user._github_token)
+            }
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Failed to save settings: {str(e)}"}), 500
