@@ -19,7 +19,7 @@ except Exception as e:
 "
 
 # Start Celery worker in the background
-PYTHONPATH=. celery -A backend.celery_worker.celery worker --loglevel=info &
+PYTHONPATH=. celery -A backend.celery_worker.celery worker --loglevel=info --concurrency=1 &
 
 # Start Gunicorn in the foreground
 PYTHONPATH=. exec gunicorn --bind 127.0.0.1:5000 backend.run:app
