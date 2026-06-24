@@ -69,6 +69,9 @@ def create_app(config_class=None):
     # Create tables in dev if they don't exist
     if app.config.get('DEBUG'):
         with app.app_context():
-            db.create_all()
+            try:
+                db.create_all()
+            except Exception as e:
+                app.logger.warning(f"Database tables creation bypassed/ignored: {e}")
             
     return app

@@ -12,6 +12,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+ENV FLASK_ENV=production
+
 # Install system dependencies (nginx, gettext-base for envsubst, and build tools)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
