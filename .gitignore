@@ -75,3 +75,4 @@ interface-spec/
 # Redis
 dump.rdb
 
+!.env.example
