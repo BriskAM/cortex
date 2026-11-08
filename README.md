@@ -1,5 +1,7 @@
 # Cortex — RAG-Based Codebase Q&A Companion
 
+**[Demo, architecture diagram and install steps](https://akshitmehta.pages.dev/projects/cortex/)**
+
 Cortex is an AI-powered developer tool that enables you to connect any GitHub repository and chat with it in natural language. Cortex indexes not just the source code, but the full engineering history (pull requests, merge descriptions, and diff summaries), answering both **what** the code does and **why** it was written.
 
 Cortex features a frictionless URL routing system: navigate to `localhost:5173/:owner/:repo` (e.g. `localhost:5173/BriskAM/cortex`), and Cortex will automatically verify, resolve, and index the repository.
@@ -109,7 +111,7 @@ pip install -r requirements.txt
 Start the Celery worker and Flask API server in separate shells:
 ```bash
 # Terminal 1: Celery task processor (run from workspace root)
-PYTHONPATH=. backend/.venv/bin/celery -A backend.celery_worker.celery worker --loglevel=info
+PYTHONPATH=. backend/.venv/bin/celery -A backend.celery_worker.celery worker --loglevel=info --pool=solo  # --pool=solo is needed on macOS
 
 # Terminal 2: Flask web server (run from workspace root)
 PORT=5001 PYTHONPATH=. backend/.venv/bin/python backend/run.py
